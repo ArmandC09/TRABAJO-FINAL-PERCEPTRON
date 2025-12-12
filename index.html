@@ -12,9 +12,10 @@
     <p>Ingresa un precio para ver si el modelo lo clasifica como barato (1) o caro (0).</p>
 
     <input type="number" id="precio" placeholder="Ingresa precio">
-    <button onclick="predecir()">Predecir</button>
+    <button id="btnPredecir" onclick="predecir()" disabled>Predecir</button>
 
     <h2 id="resultado"></h2>
+    <p id="estado">Cargando modelo...</p>
 
     <!-- Importar TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.2.0"></script>
