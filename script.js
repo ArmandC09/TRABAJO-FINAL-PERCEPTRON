@@ -1,9 +1,28 @@
 let modelo;
+const rutasPosibles = [
+    'tfjs_model_precio/model.json',
+    'tfjs_model_precio/content/tfjs_model_precio/model.json'
+];
 
-// CARGAR MODELO
+// Elementos UI
+const btn = document.getElementById('btnPredecir');
+const estado = document.getElementById('estado');
+
+// CARGAR MODELO (intenta varias rutas y muestra estado)
 async function cargarModelo() {
-    modelo = await tf.loadGraphModel('tfjs_model_precio/model.json');
-    console.log("Modelo cargado correctamente.");
+    estado.innerText = 'Cargando modelo...';
+    for (const ruta of rutasPosibles) {
+        try {
+            modelo = await tf.loadGraphModel(ruta);
+            console.log('Modelo cargado correctamente desde:', ruta);
+            estado.innerText = 'Modelo cargado.';
+            btn.disabled = false;
+            return;
+        } catch (e) {
+            console.warn('No se pudo cargar desde', ruta, e.message || e);
+        }
+    }
+    estado.innerText = 'Error: no se pudo cargar el modelo. Revisa la ruta y archivos en el servidor.';
 }
 
 cargarModelo();
@@ -11,25 +30,29 @@ cargarModelo();
 // HACER PREDICCIÓN
 async function predecir() {
     if (!modelo) {
-        alert("El modelo aún no se ha cargado.");
+        alert('El modelo aún no se ha cargado.');
         return;
     }
 
-    const precio = parseFloat(document.getElementById("precio").value);
+    const precio = parseFloat(document.getElementById('precio').value);
 
     if (isNaN(precio)) {
-        alert("Ingresa un precio válido.");
+        alert('Ingresa un precio válido.');
         return;
     }
 
-    // Crear tensor 1x1
-    const entrada = tf.tensor2d([precio], [1, 1]);
+    try {
+        // Crear tensor 1x1 y predecir con tidy para liberar memoria
+        const valor = await tf.tidy(() => {
+            const entrada = tf.tensor2d([precio], [1, 1]);
+            const pred = modelo.predict(entrada);
+            return pred.dataSync()[0];
+        });
 
-    const prediccion = modelo.predict(entrada);
-    const valor = (await prediccion.data())[0];
-
-    document.getElementById("resultado").innerText =
-        valor > 0.5
-        ? "Resultado: BARATO (1)"
-        : "Resultado: CARO (0)";
+        document.getElementById('resultado').innerText =
+            valor > 0.5 ? 'Resultado: BARATO (1)' : 'Resultado: CARO (0)';
+    } catch (err) {
+        console.error('Error en predicción:', err);
+        alert('Ocurrió un error al realizar la predicción. Revisa la consola.');
+    }
 }
