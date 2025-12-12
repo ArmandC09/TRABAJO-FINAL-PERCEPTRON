@@ -39,7 +39,6 @@ async function predecir() {
         return;
     }
 
-    // 👉 AHORA SE USA EL PRECIO TOTAL
     const precioTotal = parseFloat(document.getElementById('precio_total').value);
 
     if (isNaN(precioTotal)) {
@@ -61,3 +60,4 @@ async function predecir() {
         alert('Ocurrió un error al realizar la predicción.');
     }
 }
+
