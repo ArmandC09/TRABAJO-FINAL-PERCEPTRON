@@ -4,8 +4,7 @@ const rutasPosibles = [
     'tfjs_model_precio/content/tfjs_model_precio/model.json'
 ];
 
-// Elementos UI
-const btn = document.getElementById('btnPredecir');
+// Elementos UI (se obtienen cuando se usan para evitar null si el DOM cambia)
 const estado = document.getElementById('estado');
 
 // CARGAR MODELO (intenta varias rutas y muestra estado)
@@ -16,7 +15,17 @@ async function cargarModelo() {
             modelo = await tf.loadGraphModel(ruta);
             console.log('Modelo cargado correctamente desde:', ruta);
             estado.innerText = 'Modelo cargado.';
-            btn.disabled = false;
+            // Obtener botón en el momento de usarlo y adjuntar el event listener
+            const btnLocal = document.getElementById('btnPredecir');
+            if (btnLocal) {
+                btnLocal.disabled = false;
+                // Evitar añadir múltiples listeners
+                btnLocal.removeEventListener('click', predecir);
+                btnLocal.addEventListener('click', predecir);
+            } else {
+                console.warn('Botón `btnPredecir` no encontrado en DOM al cargar el modelo.');
+                estado.innerText += ' (Botón no encontrado)';
+            }
             return;
         } catch (e) {
             console.warn('No se pudo cargar desde', ruta, e.message || e);
