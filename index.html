@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador de Precios - Perceptrón</title>
+</head>
+<body>
+
+    <h1>Clasificador de Precios (Barato / Caro)</h1>
+
+    <p>Ingresa un precio para ver si el modelo lo clasifica como barato (1) o caro (0).</p>
+
+    <input type="number" id="precio" placeholder="Ingresa precio">
+    <button onclick="predecir()">Predecir</button>
+
+    <h2 id="resultado"></h2>
+
+    <!-- Importar TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.2.0"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
